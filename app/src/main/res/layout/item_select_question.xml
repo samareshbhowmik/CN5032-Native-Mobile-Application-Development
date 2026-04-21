@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:layout_marginBottom="8dp"
+    android:background="#EEEEEE">
+
+    <CheckBox
+        android:id="@+id/checkSelectQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select this question" />
+
+    <TextView
+        android:id="@+id/txtQuestionText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginTop="6dp"
+        android:text="Question text" />
+
+    <TextView
+        android:id="@+id/txtQuestionDifficulty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Difficulty" />
+
+</LinearLayout>
