@@ -3,6 +3,7 @@ package com.example.quizappcn5032.ui
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.quizappcn5032.MainActivity
 import com.example.quizappcn5032.databinding.ActivityAdminDashboardBinding
 
 class AdminDashboardActivity : AppCompatActivity() {
@@ -25,5 +26,16 @@ class AdminDashboardActivity : AppCompatActivity() {
         binding.btnCreateQuiz.setOnClickListener {
             startActivity(Intent(this, CreateQuizActivity::class.java))
         }
+
+        binding.btnSignOut.setOnClickListener {
+            signOut()
+        }
+    }
+
+    private fun signOut() {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
     }
 }

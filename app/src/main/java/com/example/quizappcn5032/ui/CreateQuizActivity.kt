@@ -31,14 +31,26 @@ class CreateQuizActivity : AppCompatActivity() {
         val time = binding.etQuizTime.text.toString().trim()
         val durationText = binding.etQuizDuration.text.toString().trim()
 
-        if (title.isEmpty() || difficulty.isEmpty() || date.isEmpty() || time.isEmpty() || durationText.isEmpty()) {
+        Toast.makeText(this, "Duration entered: $durationText", Toast.LENGTH_SHORT).show()
+
+        if (title.isEmpty() || difficulty.isEmpty() || date.isEmpty() || time.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (durationText.isEmpty()) {
+            Toast.makeText(this, "Please enter quiz duration", Toast.LENGTH_SHORT).show()
             return
         }
 
         val duration = durationText.toIntOrNull()
         if (duration == null) {
             Toast.makeText(this, "Enter valid duration", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (duration <= 0) {
+            Toast.makeText(this, "Duration must be greater than 0", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -55,11 +67,17 @@ class CreateQuizActivity : AppCompatActivity() {
                 )
             ).toInt()
 
+            if (quizId <= 0) {
+                Toast.makeText(this@CreateQuizActivity, "Quiz could not be saved", Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+
             Toast.makeText(this@CreateQuizActivity, "Quiz saved. Now select questions.", Toast.LENGTH_SHORT).show()
 
-            val intent = Intent(this@CreateQuizActivity, SelectQuestionsForQuizActivity::class.java)
-            intent.putExtra("quizId", quizId)
-            intent.putExtra("quizTitle", title)
+            val intent = Intent(this@CreateQuizActivity, SelectQuestionsForQuizActivity::class.java).apply {
+                putExtra(SelectQuestionsForQuizActivity.EXTRA_QUIZ_ID, quizId)
+                putExtra(SelectQuestionsForQuizActivity.EXTRA_QUIZ_TITLE, title)
+            }
             startActivity(intent)
             finish()
         }

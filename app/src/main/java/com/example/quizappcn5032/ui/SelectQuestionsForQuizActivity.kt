@@ -2,6 +2,7 @@
 package com.example.quizappcn5032.ui
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -14,19 +15,34 @@ import kotlinx.coroutines.launch
 class SelectQuestionsForQuizActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySelectQuestionsForQuizBinding
-    private lateinit var adapter: SelectQuestionAdapter
+    private var adapter: SelectQuestionAdapter? = null
     private var quizId: Int = 0
     private var quizTitle: String = ""
+
+    companion object {
+        const val EXTRA_QUIZ_ID = "quizId"
+        const val EXTRA_QUIZ_TITLE = "quizTitle"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySelectQuestionsForQuizBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        quizId = intent.getIntExtra("quizId", 0)
-        quizTitle = intent.getStringExtra("quizTitle") ?: ""
+        Toast.makeText(this, "SelectQuestionsForQuizActivity opened", Toast.LENGTH_SHORT).show()
 
-        binding.txtQuizName.text = "Quiz: $quizTitle"
+        quizId = intent.getIntExtra(EXTRA_QUIZ_ID, 0)
+        quizTitle = intent.getStringExtra(EXTRA_QUIZ_TITLE) ?: ""
+
+        if (quizId <= 0) {
+            Toast.makeText(this, "Quiz details missing. Please create the quiz again.", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        binding.txtDebugScreenOpened.text = "SELECT QUESTIONS SCREEN OPENED"
+        binding.txtQuizName.text = "Quiz: $quizTitle (ID: $quizId)"
+        binding.txtQuestionLoadStatus.text = "Loading questions..."
         binding.recyclerSelectQuestions.layoutManager = LinearLayoutManager(this)
 
         loadQuestions()
@@ -40,13 +56,25 @@ class SelectQuestionsForQuizActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val db = AppDatabase.getDatabase(this@SelectQuestionsForQuizActivity)
             val questions = db.questionDao().getAllQuestions()
-            adapter = SelectQuestionAdapter(questions)
-            binding.recyclerSelectQuestions.adapter = adapter
+
+            if (questions.isEmpty()) {
+                binding.txtQuestionLoadStatus.text = "Loaded 0 questions"
+                binding.txtNoQuestions.visibility = View.VISIBLE
+                binding.recyclerSelectQuestions.visibility = View.GONE
+                binding.btnSaveSelectedQuestions.isEnabled = false
+            } else {
+                binding.txtQuestionLoadStatus.text = "Loaded ${questions.size} question(s)"
+                binding.txtNoQuestions.visibility = View.GONE
+                binding.recyclerSelectQuestions.visibility = View.VISIBLE
+                adapter = SelectQuestionAdapter(questions)
+                binding.recyclerSelectQuestions.adapter = adapter
+                binding.btnSaveSelectedQuestions.isEnabled = true
+            }
         }
     }
 
     private fun saveSelectedQuestions() {
-        val selectedIds = adapter.getSelectedQuestionIds()
+        val selectedIds = adapter?.getSelectedQuestionIds().orEmpty()
 
         if (selectedIds.isEmpty()) {
             Toast.makeText(this, "Please select at least one question", Toast.LENGTH_SHORT).show()

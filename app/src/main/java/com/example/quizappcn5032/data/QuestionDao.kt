@@ -10,7 +10,7 @@ import androidx.room.Update
 interface QuestionDao {
 
     @Insert
-    suspend fun insertQuestion(question: QuestionEntity)
+    suspend fun insertQuestion(question: QuestionEntity): Long
 
     @Query("SELECT * FROM questions ORDER BY id DESC")
     suspend fun getAllQuestions(): List<QuestionEntity>
